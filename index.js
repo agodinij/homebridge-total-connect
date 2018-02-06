@@ -14,8 +14,6 @@ module.exports = function(homebridge) {
         "name": "Security System",
         "username": "<username>",
         "password": "<password>",
-        "application_id": "14588",
-        "application_version": "1.0.0",
         "manufacturer": "Honeywell",
         "model": "VISTA 21-iP",
         "serial": "12345",

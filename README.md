@@ -1,6 +1,6 @@
 # homebridge-total-connect-security
 
-Homebridge plugin allowing arm/disarm of total connect security 2.0 system.
+Homebridge plugin allowing basic control of Total Connect 2.0 security system.
 
 # Installation
 
@@ -10,8 +10,8 @@ Homebridge plugin allowing arm/disarm of total connect security 2.0 system.
 
 # Configuration
 
-Leave appID and version as is, but enter username and password of a user with access to the Total Connect 2.0 system.
+Enter username and password of a user with access to the Total Connect 2.0 system.
 
-# ToDo
+# Notes
 
-Only supports one location/system, and only arms as "Arm Stay" 
+Only supports one panel and one partition at this time.
