@@ -1,17 +1,39 @@
 # homebridge-total-connect-security
 
-Homebridge plugin allowing basic control of Total Connect 2.0 security system.
+Homebridge plugin allowing basic control of Total Connect 2.0 security systems.
 
 # Installation
 
-1. Install homebridge using: npm install -g homebridge
-2. Install homebridge-total-connect-security using: npm install -g homebridge-total-connect-security
-3. Update your configuration file. See sample-config.json in this repository for a sample. 
+1. Install homebridge using: `npm install -g homebridge`
+2. Install homebridge-total-connect-security using: `npm install -g homebridge-total-connect-security`
+3. Update the configuration file.
 
 # Configuration
 
-Enter username and password of a user with access to the Total Connect 2.0 system.
+    "accessories": [
+      {
+        "accessory": "TotalConnectSecurity",
+        "name": "Security System",
+        "username": "<username>",
+        "password": "<password>",
+        "manufacturer": "Honeywell",
+        "model": "VISTA 21-iP",
+        "serial_number": "12345",
+        "hardware_revision": "1.2.3"
+      }
+    ]
+
+Parameter | Required | Modifiable | Comment
+:--- | :---: | :---: | :---
+accessory | yes | no | Must be `TotalConnectSecurity`
+name | no | yes | "Security System" will be shown in HomeKit if not specified
+username | yes | yes | Total Connect 2.0 username
+password | yes | yes | Total Connect 2.0 password
+manufacturer | no | yes | "Honeywell" will be shown in HomeKit if not specified
+model | no | yes | "Not Specified" will be shown in HomeKit if not specified
+serial_number | no | yes | "Not Specified" will be shown in HomeKit if not specified
+hardware_revision | no | yes | Not shown in HomeKit if not specified
 
 # Notes
 
-Only supports one panel and one partition at this time.
+This only supports one panel and one partition at this time.
