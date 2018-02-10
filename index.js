@@ -87,100 +87,94 @@ function TotalConnectSecurityAccessory(log, config) {
 
 TotalConnectSecurityAccessory.prototype.getSecuritySystemCurrentState = function(callback) {
     this.log("Getting current state");
-    this.client.tcIsArmed(callback);
-    switch (state) {
+    var current = null;
+    switch (this.client.GetCurrentState(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
         case "armed_away_instant_bypass":
           this.log("Current state is armed away");
-          callback(null, this.currentAwayArm);
+          current = this.currentAwayArm;
           break;
         case "armed_stay":
         case "armed_stay_bypass":
         case "armed_stay_instant":
         case "armed_stay_instant_bypass":
-          this.log("Target state is armed stay");
           this.log("Current state is armed stay");
-          callback(null, this.currentStayArm);
+          current = this.currentStayArm;
           break;
         case "armed_stay_night":
           this.log("Current state is armed night");
-          callback(null, this.currentNightArm);
-          break;
-        case "disarmed":
-        case "disarmed_bypass":
-          this.log("Current state is disarmed");
-          callback(null, this.currentDisarmed);
+          current = this.currentNightArm;
           break;
         case "triggered":
           this.log("Current state is triggered");
-          callback(null, this.currentTriggered);
+          current = this.currentTriggered;
           break;
+        case "disarmed":
+        case "disarmed_bypass":
         default:
           this.log("Current state is disarmed");
-          callback(null, this.currentDisarmed);
+          current = this.currentDisarmed;
           break;
     }
+    callback(null, current);
 }
 
 TotalConnectSecurityAccessory.prototype.getSecuritySystemTargetState = function(callback) {
     this.log("Getting target state");
-    this.client.GetCurrentState(callback);
-    switch (state) {
+    var target = null;
+    switch (this.client.GetCurrentState(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
         case "armed_away_instant_bypass":
           this.log("Target state is armed away");
-          callback(null, this.targetAwayArm);
+          target = this.targetAwayArm;
           break;
         case "armed_stay":
         case "armed_stay_bypass":
         case "armed_stay_instant":
         case "armed_stay_instant_bypass":
           this.log("Target state is armed stay");
-          callback(null, this.targetStayArm);
+          target = this.targetStayArm;
           break;
         case "armed_stay_night":
           this.log("Target state is armed night");
-          callback(null, this.targetNightArm);
+          target = this.targetNightArm;
           break;
         case "disarmed":
         case "disarmed_bypass":
-          this.log("Target state is disarmed");
-          callback(null, this.targetDisarm);
-          break;
         default:
           this.log("Target state is disarmed");
-          callback(null, this.targetDisarm);
+          target = this.targetDisarm;
           break;
     }
+    callback(null, target);
 }
 
 TotalConnectSecurityAccessory.prototype.setSecuritySystemTargetState = function(state, callback) {
+    var target = null;
     switch (state) {
         case this.targetStayArm:
           this.log("Setting target state to armed stay");
-          this.client.tcArm(stay, callback);
+          target = "armed_stay";
           break;
         case this.targetAwayArm:
           this.log("Setting target state to armed away");
-          this.client.tcArm(away, callback);
+          target = "armed_away";
           break;
         case this.targetNightArm:
           this.log("Setting target state to armed night");
-          this.client.tcArm(night, callback);
+          target = "armed_night";
           break;
         case this.targetDisarm:
-          this.log("Setting target state to disarmed");
-          this.client.tcDisarm(callback);
-          break;
         default:
           this.log("Setting target state to disarmed");
-          this.client.tcDisarm(callback);
+          target = "disarmed";
           break;
-      }
+    }
+    this.client.SetTargetState(callback, target);
 }
 
 TotalConnectSecurityAccessory.prototype.getServices = function() {
