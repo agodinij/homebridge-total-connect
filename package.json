@@ -1,17 +1,19 @@
 {
   "name": "homebridge-total-connect-security",
-  "version": "1.0.1",
-  "description": "Total Connect plugin for homebridge: https://github.com/nfarina/homebridge",
+  "version": "1.0.0",
+  "description": "Total Connect plugin for Homebridge: https://github.com/nfarina/homebridge",
   "license": "ISC",
   "keywords": [
-    "homebridge-plugin"
+    "homebridge",
+    "homebridge-plugin",
+    "total-connect"
   ],
   "repository": {
     "type": "git",
-    "url": "git://github.com/tonybrame/homebridge-total-connect-security.git"
+    "url": "git://github.com/schmittx/homebridge-total-connect-security.git"
   },
   "bugs": {
-    "url": "https://github.com/tonybrame/homebridge-total-connect-security/issues"
+    "url": "https://github.com/schmittx/homebridge-total-connect-security/issues"
   },
   "engines": {
     "node": ">=0.12.0",
