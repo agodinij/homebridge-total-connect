@@ -5,21 +5,8 @@ module.exports = function(homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
 
-    homebridge.registerAccessory("homebridge-total-connect-security", "TotalConnectSecurity", TotalConnectSecurityAccessory);
+    homebridge.registerAccessory("homebridge-total-connect-security", "TotalConnectSecurity", securitySystemAccessory);
 }
-
-/*
-{
-        "accessory": "TotalConnectSecurity",
-        "name": "Security System",
-        "username": "<username>",
-        "password": "<password>",
-        "manufacturer": "Honeywell",
-        "model": "VISTA 21-iP",
-        "serial": "12345",
-        "hardware": "1.2.3"
-   }
-* */
 
 // SecuritySystemCurrentState
 this.currentStayArm = Characteristic.SecuritySystemCurrentState.STAY_ARM;  // 0
@@ -42,16 +29,16 @@ this.generalFault = Characteristic.StatusFault.GENERAL_FAULT; // 1
 this.notTampered = Characteristic.StatusTampered.NOT_TAMPERED; // 0
 this.tampered = Characteristic.StatusTampered.TAMPERED; // 1
 
-function TotalConnectSecurityAccessory(log, config) {
+function securitySystemAccessory(log, config) {
 
     this.log = log;
-    this.name = config["name"];
+    this.name = config["name"] || "Security System";
     this.manufacturer = config["manufacturer"] || "Honeywell";
     this.model = config["model"] || "Not Specified";
-    this.serial = config["serial"] || "Not Specified";
+    this.serial = config["serial_number"] || "Not Specified";
     this.firmware = require('./package.json').version;
-    if (config["hardware"]) {
-        this.hardware = config["hardware"];
+    if (config["hardware_revision"]) {
+        this.hardware = config["hardware_revision"];
     }
 
     this.client = new TotalConnectClient(this.log, config);
@@ -85,98 +72,95 @@ function TotalConnectSecurityAccessory(log, config) {
         .on('set', this.setSecuritySystemTargetState.bind(this));
 }
 
-TotalConnectSecurityAccessory.prototype.getSecuritySystemCurrentState = function(callback) {
+securitySystemAccessory.prototype.getSecuritySystemCurrentState = function(callback) {
     this.log("Getting current state");
-    var current = null;
     switch (this.client.GetCurrentState(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
         case "armed_away_instant_bypass":
-          this.log("Current state is armed away");
-          current = this.currentAwayArm;
-          break;
+            this.log("Current state is armed away");
+            var current = this.currentAwayArm;
+            break;
         case "armed_stay":
         case "armed_stay_bypass":
         case "armed_stay_instant":
         case "armed_stay_instant_bypass":
-          this.log("Current state is armed stay");
-          current = this.currentStayArm;
-          break;
+            this.log("Current state is armed stay");
+            var current = this.currentStayArm;
+            break;
         case "armed_stay_night":
-          this.log("Current state is armed night");
-          current = this.currentNightArm;
-          break;
+            this.log("Current state is armed night");
+            var current = this.currentNightArm;
+            break;
         case "triggered":
-          this.log("Current state is triggered");
-          current = this.currentTriggered;
-          break;
+            this.log("Current state is triggered");
+            var current = this.currentTriggered;
+            break;
         case "disarmed":
         case "disarmed_bypass":
         default:
-          this.log("Current state is disarmed");
-          current = this.currentDisarmed;
-          break;
+            this.log("Current state is disarmed");
+            var current = this.currentDisarmed;
+            break;
     }
     callback(null, current);
 }
 
-TotalConnectSecurityAccessory.prototype.getSecuritySystemTargetState = function(callback) {
+securitySystemAccessory.prototype.getSecuritySystemTargetState = function(callback) {
     this.log("Getting target state");
-    var target = null;
     switch (this.client.GetCurrentState(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
         case "armed_away_instant_bypass":
-          this.log("Target state is armed away");
-          target = this.targetAwayArm;
-          break;
+            this.log("Target state is armed away");
+            var target = this.targetAwayArm;
+            break;
         case "armed_stay":
         case "armed_stay_bypass":
         case "armed_stay_instant":
         case "armed_stay_instant_bypass":
-          this.log("Target state is armed stay");
-          target = this.targetStayArm;
-          break;
+            this.log("Target state is armed stay");
+            var target = this.targetStayArm;
+            break;
         case "armed_stay_night":
-          this.log("Target state is armed night");
-          target = this.targetNightArm;
-          break;
+            this.log("Target state is armed night");
+            var target = this.targetNightArm;
+            break;
         case "disarmed":
         case "disarmed_bypass":
         default:
-          this.log("Target state is disarmed");
-          target = this.targetDisarm;
-          break;
+            this.log("Target state is disarmed");
+            var target = this.targetDisarm;
+            break;
     }
     callback(null, target);
 }
 
-TotalConnectSecurityAccessory.prototype.setSecuritySystemTargetState = function(state, callback) {
-    var target = null;
+securitySystemAccessory.prototype.setSecuritySystemTargetState = function(state, callback) {
     switch (state) {
         case this.targetStayArm:
-          this.log("Setting target state to armed stay");
-          target = "armed_stay";
-          break;
+            this.log("Setting target state to armed stay");
+            var target = "armed_stay";
+            break;
         case this.targetAwayArm:
-          this.log("Setting target state to armed away");
-          target = "armed_away";
-          break;
+            this.log("Setting target state to armed away");
+            var target = "armed_away";
+            break;
         case this.targetNightArm:
-          this.log("Setting target state to armed night");
-          target = "armed_night";
-          break;
+            this.log("Setting target state to armed night");
+            var target = "armed_night";
+            break;
         case this.targetDisarm:
         default:
-          this.log("Setting target state to disarmed");
-          target = "disarmed";
-          break;
+            this.log("Setting target state to disarmed");
+            var target = "disarmed";
+            break;
     }
     this.client.SetTargetState(callback, target);
 }
 
-TotalConnectSecurityAccessory.prototype.getServices = function() {
+securitySystemAccessory.prototype.getServices = function() {
     return [this.accessoryInformationService, this.securitySystemService];
 }
