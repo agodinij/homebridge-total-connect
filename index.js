@@ -74,7 +74,7 @@ function securitySystemAccessory(log, config) {
 
 securitySystemAccessory.prototype.getSecuritySystemCurrentState = function(callback) {
     this.log("Getting current state");
-    switch (this.client.GetCurrentState(callback)) {
+    switch (this.client.getStatus(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
@@ -109,7 +109,7 @@ securitySystemAccessory.prototype.getSecuritySystemCurrentState = function(callb
 
 securitySystemAccessory.prototype.getSecuritySystemTargetState = function(callback) {
     this.log("Getting target state");
-    switch (this.client.GetCurrentState(callback)) {
+    switch (this.client.getStatus(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
@@ -158,7 +158,7 @@ securitySystemAccessory.prototype.setSecuritySystemTargetState = function(state,
             var target = "disarmed";
             break;
     }
-    this.client.SetTargetState(callback, target);
+    this.client.setStatus(callback, target);
 }
 
 securitySystemAccessory.prototype.getServices = function() {
