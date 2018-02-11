@@ -142,20 +142,20 @@ securitySystemAccessory.prototype.setSecuritySystemTargetState = function(state,
     switch (state) {
         case this.targetStayArm:
             this.log("Setting target state to armed stay");
-            var target = "armed_stay";
+            var target = "stay";
             break;
         case this.targetAwayArm:
             this.log("Setting target state to armed away");
-            var target = "armed_away";
+            var target = "away";
             break;
         case this.targetNightArm:
             this.log("Setting target state to armed night");
-            var target = "armed_night";
+            var target = "stay_night";
             break;
         case this.targetDisarm:
         default:
             this.log("Setting target state to disarmed");
-            var target = "disarmed";
+            var target = "disarm";
             break;
     }
     this.client.setStatus(callback, target);
