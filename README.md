@@ -1,7 +1,3 @@
-# homebridge-total-connect
-
-Homebridge plugin allowing basic control of Total Connect 2.0 security systems.
-
 # Installation
 
 1. Install homebridge using: `npm install -g homebridge`
