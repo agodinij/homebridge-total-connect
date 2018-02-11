@@ -1,35 +1,14 @@
 var Service, Characteristic;
-var TotalConnectClient =  require('./lib/total_connect_client');
+var TotalConnectClient = require('./lib/client');
 
-module.exports = function(homebridge) {
+module.exports = function (homebridge) {
     Service = homebridge.hap.Service;
     Characteristic = homebridge.hap.Characteristic;
-
-    homebridge.registerAccessory("homebridge-total-connect-security", "TotalConnectSecurity", securitySystemAccessory);
+    homebridge.registerAccessory("homebridge-total-connect", "TotalConnect", TotalConnectAccessory);
 }
 
-// SecuritySystemCurrentState
-this.currentStayArm = Characteristic.SecuritySystemCurrentState.STAY_ARM;  // 0
-this.currentAwayArm = Characteristic.SecuritySystemCurrentState.AWAY_ARM; // 1
-this.currentNightArm = Characteristic.SecuritySystemCurrentState.NIGHT_ARM; // 2
-this.currentDisarmed = Characteristic.SecuritySystemCurrentState.DISARMED; // 3
-this.currentTriggered = Characteristic.SecuritySystemCurrentState.ALARM_TRIGGERED; // 4
 
-// SecuritySystemTargetState
-this.targetStayArm = Characteristic.SecuritySystemTargetState.STAY_ARM; // 0
-this.targetAwayArm = Characteristic.SecuritySystemTargetState.AWAY_ARM; // 1
-this.targetNightArm = Characteristic.SecuritySystemTargetState.NIGHT_ARM; // 2
-this.targetDisarm = Characteristic.SecuritySystemTargetState.DISARM; // 3
-
-// StatusFault
-this.noFault = Characteristic.StatusFault.NO_FAULT; // 0
-this.generalFault = Characteristic.StatusFault.GENERAL_FAULT; // 1
-
-// StatusTampered
-this.notTampered = Characteristic.StatusTampered.NOT_TAMPERED; // 0
-this.tampered = Characteristic.StatusTampered.TAMPERED; // 1
-
-function securitySystemAccessory(log, config) {
+function TotalConnectAccessory(log, config) {
 
     this.log = log;
     this.name = config["name"] || "Security System";
@@ -43,6 +22,28 @@ function securitySystemAccessory(log, config) {
 
     this.client = new TotalConnectClient(this.log, config);
 
+    // SecuritySystemCurrentState
+    this.currentStayArm = Characteristic.SecuritySystemCurrentState.STAY_ARM;  // 0
+    this.currentAwayArm = Characteristic.SecuritySystemCurrentState.AWAY_ARM; // 1
+    this.currentNightArm = Characteristic.SecuritySystemCurrentState.NIGHT_ARM; // 2
+    this.currentDisarmed = Characteristic.SecuritySystemCurrentState.DISARMED; // 3
+    this.currentTriggered = Characteristic.SecuritySystemCurrentState.ALARM_TRIGGERED; // 4
+
+    // SecuritySystemTargetState
+    this.targetStayArm = Characteristic.SecuritySystemTargetState.STAY_ARM; // 0
+    this.targetAwayArm = Characteristic.SecuritySystemTargetState.AWAY_ARM; // 1
+    this.targetNightArm = Characteristic.SecuritySystemTargetState.NIGHT_ARM; // 2
+    this.targetDisarm = Characteristic.SecuritySystemTargetState.DISARM; // 3
+
+    // StatusFault
+    this.noFault = Characteristic.StatusFault.NO_FAULT; // 0
+    this.generalFault = Characteristic.StatusFault.GENERAL_FAULT; // 1
+
+    // StatusTampered
+    this.notTampered = Characteristic.StatusTampered.NOT_TAMPERED; // 0
+    this.tampered = Characteristic.StatusTampered.TAMPERED; // 1
+
+
     this.accessoryInformationService = new Service.AccessoryInformation();
 
     this.accessoryInformationService
@@ -53,7 +54,7 @@ function securitySystemAccessory(log, config) {
         .setCharacteristic(Characteristic.FirmwareRevision, this.firmware);
 
     if (this.hardware) {
-        accessoryInformationService
+        this.accessoryInformationService
             .setCharacteristic(Characteristic.HardwareRevision, this.hardware);
     }
 
@@ -72,95 +73,98 @@ function securitySystemAccessory(log, config) {
         .on('set', this.setSecuritySystemTargetState.bind(this));
 }
 
-securitySystemAccessory.prototype.getSecuritySystemCurrentState = function(callback) {
+TotalConnectAccessory.prototype.getSecuritySystemCurrentState = function(callback) {
     this.log("Getting current state");
+    var current = null;
     switch (this.client.getStatus(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
         case "armed_away_instant_bypass":
             this.log("Current state is armed away");
-            var current = this.currentAwayArm;
+            current = this.currentAwayArm;
             break;
         case "armed_stay":
         case "armed_stay_bypass":
         case "armed_stay_instant":
         case "armed_stay_instant_bypass":
             this.log("Current state is armed stay");
-            var current = this.currentStayArm;
+            current = this.currentStayArm;
             break;
         case "armed_stay_night":
             this.log("Current state is armed night");
-            var current = this.currentNightArm;
+            current = this.currentNightArm;
             break;
         case "triggered":
             this.log("Current state is triggered");
-            var current = this.currentTriggered;
+            current = this.currentTriggered;
             break;
         case "disarmed":
         case "disarmed_bypass":
         default:
             this.log("Current state is disarmed");
-            var current = this.currentDisarmed;
+            current = this.currentDisarmed;
             break;
     }
     callback(null, current);
 }
 
-securitySystemAccessory.prototype.getSecuritySystemTargetState = function(callback) {
+TotalConnectAccessory.prototype.getSecuritySystemTargetState = function(callback) {
     this.log("Getting target state");
+    var target = null;
     switch (this.client.getStatus(callback)) {
         case "armed_away":
         case "armed_away_bypass":
         case "armed_away_instant":
         case "armed_away_instant_bypass":
             this.log("Target state is armed away");
-            var target = this.targetAwayArm;
+            target = this.targetAwayArm;
             break;
         case "armed_stay":
         case "armed_stay_bypass":
         case "armed_stay_instant":
         case "armed_stay_instant_bypass":
             this.log("Target state is armed stay");
-            var target = this.targetStayArm;
+            target = this.targetStayArm;
             break;
         case "armed_stay_night":
             this.log("Target state is armed night");
-            var target = this.targetNightArm;
+            target = this.targetNightArm;
             break;
         case "disarmed":
         case "disarmed_bypass":
         default:
             this.log("Target state is disarmed");
-            var target = this.targetDisarm;
+            target = this.targetDisarm;
             break;
     }
     callback(null, target);
 }
 
-securitySystemAccessory.prototype.setSecuritySystemTargetState = function(state, callback) {
+TotalConnectAccessory.prototype.setSecuritySystemTargetState = function(state, callback) {
+    var target = null;
     switch (state) {
         case this.targetStayArm:
             this.log("Setting target state to armed stay");
-            var target = "stay";
+            target = "stay";
             break;
         case this.targetAwayArm:
             this.log("Setting target state to armed away");
-            var target = "away";
+            target = "away";
             break;
         case this.targetNightArm:
             this.log("Setting target state to armed night");
-            var target = "stay_night";
+            target = "stay_night";
             break;
         case this.targetDisarm:
         default:
             this.log("Setting target state to disarmed");
-            var target = "disarm";
+            target = "disarm";
             break;
     }
     this.client.setStatus(callback, target);
 }
 
-securitySystemAccessory.prototype.getServices = function() {
+TotalConnectAccessory.prototype.getServices = function() {
     return [this.accessoryInformationService, this.securitySystemService];
 }
